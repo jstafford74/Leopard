@@ -1,0 +1,66 @@
+<!-- Thanks
+Photo by Su San Lee on Unsplash
+https://www.smashingmagazine.com/2015/05/why-the-svg-filter-is-awesome/
+https://css-tricks.com/look-svg-light-source-filters/ -->
+
+<!-- VISIBLE SVG -->
+<svg viewBox="0 0 1890 1260">
+    
+    <!-- BACKGROUND IMAGE - visible -->
+    <image xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/5946/kyoto.jpg" width="1890" x=0 height="1260" y=0 ></image>
+    
+    <!-- DISTORTION IMAGE - clipped -->
+    <image xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/5946/kyoto.jpg" width="1890" x=0 height="1260" y=0 clip-path="url(#clip)" filter= "url(#distortion)"></image>
+    
+    <!-- TEXT - clipped -->
+    <clipPath id="clip">
+        <text x="50%" y ="50%" dominant-baseline="middle" text-anchor="middle">KYOTO</text>
+    </clipPath>
+    
+    <!-- TEXT - visible -->
+    <text x="50%" y ="50%" dominant-baseline="middle" text-anchor="middle" filter="url(#textFilter)">KYOTO</text>
+    
+</svg>
+
+<!-- FILTERS -->
+<svg>
+    <filter id="distortion">
+        <feTurbulence type="turbulence" baseFrequency="0.05" numOctaves="2" result="turbulence"/>
+    <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="20" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    
+    <filter id="textFilter">
+        
+        <!-- dark edge -->
+        <feMorphology operator="dilate" radius="4" in="SourceAlpha" result="dark_edge_01" />
+        <feConvolveMatrix order="3,3" kernelMatrix=
+         "1 0 0 
+          0 1 0
+          0 0 1" in="dark_edge_01" result="dark_edge_02" />
+        <feOffset dx="5" dy="5" in="dark_edge_02" result="dark_edge_03"/>
+        <feFlood flood-color="rgba(0,0,0,.5)" result="dark_edge_04" />
+        <feComposite in="dark_edge_04" in2="dark_edge_03" operator="in" result="dark_edge" />
+        
+        
+        
+        <!-- light edge -->
+        <feMorphology operator="dilate" radius="4" in="SourceAlpha" result="light_edge_01" />
+        <feConvolveMatrix order="3,3" kernelMatrix=
+        "1 0 0 
+         0 1 0
+         0 0 1" in="light_edge_01" result="light_edge_02" />
+        <feOffset dx="-2" dy="-2" in="light_edge_02" result="light_edge_03"/>
+        <feFlood flood-color="rgba(255,255,255,.5)" result="light_edge_04" />
+        <feComposite in="light_edge_04" in2="light_edge_03" operator="in" result="light_edge" />
+        
+        
+        
+        <!-- edges complete -->
+        <feMerge result="edges">
+             <feMergeNode in="dark_edge" />
+             <feMergeNode in="light_edge" />
+        </feMerge>
+        <feComposite in="edges" in2="SourceGraphic" operator="out" result="edges_complete" />
+
+    </filter>
+</svg>
